@@ -1,0 +1,52 @@
+{
+  "name": "project-dane-core",
+  "version": "1.0.0",
+  "description": "DANA Automated Network Enterprise (DANE) - Platform Manajemen Merchant dan Payment Gateway Finansial",
+  "private": true,
+  "author": "Enterprise Engineering Team <engineering@dana.id>",
+  "license": "Proprietary",
+  "engines": {
+    "node": ">=22.0.0",
+    "npm": ">=10.0.0"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint --fix",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "seed:stress": "ts-node -r tsconfig-paths/register src/scripts/seed-stress-test.ts --run"
+  },
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "firebase-admin": "^13.0.0",
+    "lucide-react": "^0.470.0",
+    "mongodb": "^6.12.0",
+    "mongoose": "^8.9.0",
+    "next": "^15.1.0",
+    "nodemailer": "^6.9.16",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tailwind-merge": "^2.6.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/nodemailer": "^6.4.17",
+    "@types/react": "^19.0.2",
+    "@types/react-dom": "^19.0.2",
+    "@vitest/coverage-v8": "^2.1.8",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^9.17.0",
+    "eslint-config-next": "^15.1.0",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.16",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}
