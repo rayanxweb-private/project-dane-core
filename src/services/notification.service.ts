@@ -1,18 +1,15 @@
 import { adminMessaging } from '@/config/firebase-admin';
 import { winstonLogger } from '@/lib/logger';
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
+
+// Inisialisasi Resend SDK menggunakan API Key, bukan SMTP Credentials
+const resend = new Resend(process.env.RESEND_API_KEY || 're_mock_sandbox_api_key_12345');
 
 export class NotificationService {
-  private mailTransporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST || 'smtp.mailgun.org',
-    port: parseInt(process.env.SMTP_PORT || '587'),
-    secure: false,
-    auth: {
-      user: process.env.SMTP_USER || '',
-      pass: process.env.SMTP_PASS || ''
-    }
-  });
-
+  
+  /**
+   * 1. Jalur Notifikasi Push - Firebase Cloud Messaging (FCM)
+   */
   async sendBroadcastTransactionPush(deviceToken: string, title: string, bodyStr: string, transactionId: string): Promise<void> {
     const payload = {
       token: deviceToken,
@@ -28,15 +25,18 @@ export class NotificationService {
 
     try {
       const response = await adminMessaging.send(payload);
-      winstonLogger.info(`FCM Node pushing notification transaction broadcast successfully dispatched: ${response}`);
+      winstonLogger.info(`[FCM REST API] Notification successfully dispatched to device: ${response}`);
     } catch (error) {
-      winstonLogger.error('FCM Transmission pipeline network error:', error);
+      winstonLogger.error('[FCM REST API] Network pipeline failure:', error);
     }
   }
 
+  /**
+   * 2. Jalur Notifikasi Email - HTTP REST API (Tanpa SMTP)
+   */
   async sendFinancialSettlementEmail(recipientEmail: string, merchantName: string, totalSettlementAmount: number): Promise<void> {
     const htmlBody = `
-      <div style="font-family: sans-serif; padding: 24px; color: #1e293b; max-width: 600px; border: 1px solid #e2e8f0; border-radius: 12px;">
+      <div style="font-family: sans-serif; padding: 24px; color: #1e293b; max-width: 600px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">
         <h2 style="color: #2563eb; margin-bottom: 4px;">DANA Enterprise Platform</h2>
         <p style="font-size: 12px; color: #64748b; margin-top: 0;">Automated Clearing Ledger Statement Document</p>
         <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
@@ -51,15 +51,21 @@ export class NotificationService {
     `;
 
     try {
-      await this.mailTransporter.sendMail({
-        from: '"DANA Enterprise Clearing Platform" <settlements@enterprise.dana.id>',
-        to: recipientEmail,
+      // Menembak REST API endpoint Resend via HTTPS POST secara asinkronus
+      const { data, error } = await resend.emails.send({
+        from: 'DANA Enterprise Clearing <settlements@enterprise.dana.id>',
+        to: [recipientEmail],
         subject: `[FINANCIAL SETTLEMENT] Clearing Ledger Statement Update`,
-        html: htmlBody
+        html: htmlBody,
       });
-      winstonLogger.info(`Operational Settlement distribution ledger document email notification successfully transmitted to: ${recipientEmail}`);
-    } catch (error) {
-      winstonLogger.error('SMTP Transmission execution exception:', error);
+
+      if (error) {
+        throw new Error(`Resend REST API Engine returned error code: ${error.message}`);
+      }
+
+      winstonLogger.info(`[HTTP REST EMAIL] Ledger statement successfully delivered via Resend API. ID: ${data?.id}`);
+    } catch (error: any) {
+      winstonLogger.error('[HTTP REST EMAIL] Transmission execution exception through API node:', error.message);
     }
   }
 }
