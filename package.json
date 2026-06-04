@@ -1,5 +1,5 @@
 {
-  "name": "project-dane-core",
+  "name": "@dana-enterprise/core",
   "version": "1.0.0",
   "description": "DANA Automated Network Enterprise (DANE) - Platform Manajemen Merchant dan Payment Gateway Finansial",
   "private": true,
@@ -11,7 +11,9 @@
   },
   "scripts": {
     "dev": "next dev",
+    "dev:sandbox": "NODE_ENV=development next dev",
     "build": "next build",
+    "build:sandbox": "NODE_ENV=development next build",
     "start": "next start",
     "lint": "next lint --fix",
     "typecheck": "tsc --noEmit",
@@ -21,21 +23,20 @@
     "seed:stress": "ts-node -r tsconfig-paths/register src/scripts/seed-stress-test.ts --run"
   },
   "dependencies": {
+    "@vercel/kv": "^1.0.1",
     "clsx": "^2.1.1",
     "firebase-admin": "^13.0.0",
     "lucide-react": "^0.470.0",
     "mongodb": "^6.12.0",
     "mongoose": "^8.9.0",
     "next": "^15.1.0",
-    "nodemailer": "^6.9.16",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "resend": "^4.1.2",
     "tailwind-merge": "^2.6.0",
     "zod": "^3.24.1"
   },
   "devDependencies": {
-    "@types/node": "^22.10.2",
-    "@types/nodemailer": "^6.4.17",
     "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.2",
     "@vitest/coverage-v8": "^2.1.8",
@@ -48,11 +49,5 @@
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.7.2",
     "vitest": "^2.1.8"
-  }
-  "scripts": {
-  "dev": "next dev",
-  "dev:sandbox": "NODE_ENV=development next dev",
-  "db:seed": "ts-node -r tsconfig-paths/register src/scripts/seed-stress-test.ts --run",
-  "build:sandbox": "NODE_ENV=development next build"
   }
 }
