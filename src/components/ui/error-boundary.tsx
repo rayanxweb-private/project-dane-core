@@ -1,56 +1,62 @@
 'use client';
 
 import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { LucideShieldAlert } from 'lucide-react';
-import { winstonLogger } from '@/lib/logger';
+import { LucideAlertOctagon, LucideRefreshCw } from 'lucide-react';
 
 interface Props {
-  children?: ReactNode;
+  children: ReactNode;
 }
 
 interface State {
   hasError: boolean;
-  error: Error | null;
+  errorDetail: string | null;
 }
 
 export class GlobalErrorBoundary extends Component<Props, State> {
   public state: State = {
     hasError: false,
-    error: null
+    errorDetail: null
   };
 
   public static getDerivedStateFromError(error: Error): State {
-    return { hasError: true, error };
+    return { hasError: true, errorDetail: error.message };
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    winstonLogger.error('Global React Error Boundary Intercepted Fatal Exception:', error, errorInfo);
-    // Secure automated enterprise integration trigger hooks for Sentry tracking
-    if (typeof window !== 'undefined' && (window as any).Sentry) {
-      (window as any).Sentry.captureException(error);
-    }
+    // In production environment context, hook outbound metrics trackers like Sentry or LogRocket here
+    console.error('Fatal Core UI Interception exception routed:', error, errorInfo);
   }
 
   public render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-6 text-center">
-          <div className="h-16 w-16 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded-2xl flex items-center justify-center mb-6">
-            <LucideShieldAlert className="h-8 w-8" />
+        <div className="min-h-screen bg-slate-950 text-slate-50 flex flex-col items-center justify-center p-6 font-sans">
+          <div className="max-w-md w-full bg-slate-900 border border-slate-800 rounded-2xl p-6 text-center space-y-4 shadow-2xl">
+            <div className="inline-block p-3 bg-rose-500/10 border border-rose-500/20 text-rose-500 rounded-full">
+              <LucideAlertOctagon className="h-8 w-8" />
+            </div>
+            
+            <div className="space-y-1">
+              <h3 className="text-base font-bold text-slate-100">Core Dashboard Thread Exception</h3>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                An unhandled runtime operation boundary crash occurred inside the active view container block matrix.
+              </p>
+            </div>
+
+            <div className="bg-slate-950 border border-slate-800/80 p-3 rounded-lg text-left overflow-x-auto max-h-32">
+              <p className="font-mono text-[10px] text-rose-400 whitespace-pre-wrap leading-normal">
+                {this.state.errorDetail || 'Fatal Unknown Assembly Execution Interruption Block Token'}
+              </p>
+            </div>
+
+            <button
+              onClick={() => window.location.reload()}
+              className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs p-2.5 rounded-lg transition-all"
+            >
+              <LucideRefreshCw className="h-3.5 w-3.5" />
+              <span>Hot-Reload Application Terminal</span>
+            </button>
           </div>
-          <h2 className="text-xl font-bold tracking-tight text-slate-100">Application Pipeline Interrupted</h2>
-          <p className="text-xs text-slate-400 max-w-md mt-2 leading-relaxed">
-            A catastrophic client-side operational infrastructure violation has occurred. The lifecycle block state has been successfully frozen to protect local storage buffers.
-          </p>
-          <div className="mt-6 p-4 bg-slate-900 border border-slate-800 rounded-xl font-mono text-[10px] text-rose-400 text-left max-w-xl overflow-x-auto">
-            {this.state.error?.stack || this.state.error?.toString()}
-          </div>
-          <button
-            onClick={() => window.location.reload()}
-            className="mt-6 px-4 py-2 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-lg text-xs font-semibold text-slate-200 transition-colors"
-          >
-            Hard Reload Application Core
-          </button>
         </div>
       );
     }
