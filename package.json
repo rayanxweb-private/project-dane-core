@@ -1,5 +1,5 @@
 {
-  "name": "dana-merchant",
+  "name": "project-dane-core",
   "version": "1.0.0",
   "description": "DANA Automated Network Enterprise (DANE) - Platform Manajemen Merchant dan Payment Gateway Finansial",
   "private": true,
@@ -23,7 +23,6 @@
     "seed:stress": "ts-node -r tsconfig-paths/register src/scripts/seed-stress-test.ts --run"
   },
   "dependencies": {
-    "@vercel/kv": "^1.0.1",
     "clsx": "^2.1.1",
     "firebase-admin": "^13.0.0",
     "lucide-react": "^0.470.0",
@@ -32,6 +31,7 @@
     "next": "^15.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "redis": "^4.7.0",
     "resend": "^4.1.2",
     "tailwind-merge": "^2.6.0",
     "zod": "^3.24.1"
