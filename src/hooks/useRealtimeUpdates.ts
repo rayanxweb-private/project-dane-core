@@ -1,38 +1,19 @@
-'use client';
-
 import { useEffect, useState } from 'react';
-import { ref, onValue, limitToLast, query } from 'firebase/database';
-import { firebaseRtdb } from '@/config/firebase-client';
 
-export function useRealtimeUpdates() {
-  const [metrics, setMetrics] = useState({
-    totalRevenue: 24592931000,
-    totalTransaction: 142940,
-    successRate: 99.4,
-    activeMerchants: 1284
-  });
-  const [liveLogs, setLiveLogs] = useState<any[]>([]);
-  const [isStreaming, setIsStreaming] = useState(false);
+export function useRealtimeUpdates(merchantId?: string) {
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    setIsStreaming(true);
-    const liveTxnRef = query(ref(firebaseRtdb, 'live_transactions'), limitToLast(20));
-    
-    const unsubscribe = onValue(liveTxnRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        const parsedList = Object.values(data).sort((a: any, b: any) => 
-          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-        );
-        setLiveLogs(parsedList);
-      }
-    });
+    // Jalur pipa simulasi pembaruan data asinkronus tanpa Firebase RTDB
+    setLoading(true);
+    const timer = setTimeout(() => {
+      setData({ status: 'ONLINE_SYNCED', timestamp: Date.now() });
+      setLoading(false);
+    }, 500);
 
-    return () => {
-      unsubscribe();
-      setIsStreaming(false);
-    };
-  }, []);
+    return () => clearTimeout(timer);
+  }, [merchantId]);
 
-  return { metrics, liveLogs, isStreaming };
+  return { data, loading };
 }
